@@ -85,8 +85,8 @@
   - **Refactor**: 完了コメント機能とテストコードの整理
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
 
-- [ ] 7. ドラッグアンドドロップ機能のTDD実装
-- [ ] 7.1 useDragAndDropカスタムHookのTDD実装
+- [x] 7. ドラッグアンドドロップ機能のTDD実装
+- [x] 7.1 useDragAndDropカスタムHookのTDD実装
   - **Red**: ドラッグ開始時の状態管理失敗テストを書く
   - **Green**: HTML5 Drag and Drop APIの基本実装
   - **Red**: ドラッグ中の状態管理テストを書く
@@ -96,7 +96,7 @@
   - **Refactor**: useDragAndDropフックとテストコードの整理
   - _Requirements: 4.1, 4.2, 4.3, 4.4_
 
-- [ ] 7.2 TodoItemにドラッグアンドドロップ機能のTDD統合
+- [x] 7.2 TodoItemにドラッグアンドドロップ機能のTDD統合
   - **Red**: ドラッグハンドルが機能しない失敗テストを書く
   - **Green**: ドラッグハンドルの追加実装
   - **Red**: 視覚的フィードバックのテストを書く（ドラッグ中の見た目変化）

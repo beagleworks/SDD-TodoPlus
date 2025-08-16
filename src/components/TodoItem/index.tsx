@@ -9,7 +9,7 @@ interface TodoItemProps {
   onPostToX: (todo: Todo) => void
   isDragging: boolean
   isDragOver?: boolean
-  dragHandleProps: unknown
+  dragHandleProps: React.HTMLAttributes<HTMLButtonElement>
 }
 
 const getNextStatus = (currentStatus: Todo['status']): Todo['status'] => {
@@ -112,7 +112,7 @@ export const TodoItem = ({
       className={getClassName()}
       style={getStyle()}
       role="listitem"
-      aria-grabbed={isDragging ? 'true' : 'false'}
+      aria-selected={isDragging}
       aria-label={`Todo item: ${todo.title}, status: ${todo.status}`}
     >
       <button

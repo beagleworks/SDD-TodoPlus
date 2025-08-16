@@ -324,7 +324,7 @@ describe('TodoItem', () => {
         const todoItem = screen.getByRole('listitem')
 
         expect(todoItem).toHaveAttribute('role', 'listitem')
-        expect(todoItem).toHaveAttribute('aria-grabbed', 'false')
+        expect(todoItem).toHaveAttribute('aria-selected', 'false')
         expect(todoItem).toHaveAttribute('aria-label')
       })
 
@@ -335,7 +335,7 @@ describe('TodoItem', () => {
 
         const todoItem = screen.getByRole('listitem')
 
-        expect(todoItem).toHaveAttribute('aria-grabbed', 'true')
+        expect(todoItem).toHaveAttribute('aria-selected', 'true')
       })
 
       it('should provide screen reader announcements', () => {
