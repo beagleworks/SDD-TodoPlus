@@ -51,13 +51,13 @@ describe('TodoList', () => {
   describe('Empty list display', () => {
     it('should display empty state message when no todos are provided', () => {
       render(<TodoList todos={[]} filter="all" {...mockProps} />)
-      
+
       expect(screen.getByText('No todos found')).toBeInTheDocument()
     })
 
     it('should not display any todo items when list is empty', () => {
       render(<TodoList todos={[]} filter="all" {...mockProps} />)
-      
+
       expect(screen.queryByRole('listitem')).not.toBeInTheDocument()
     })
   })
@@ -65,7 +65,7 @@ describe('TodoList', () => {
   describe('Todo list display', () => {
     it('should display all todos when filter is "all"', () => {
       render(<TodoList todos={mockTodos} filter="all" {...mockProps} />)
-      
+
       expect(screen.getByText('Not started todo')).toBeInTheDocument()
       expect(screen.getByText('In progress todo')).toBeInTheDocument()
       expect(screen.getByText('Completed todo')).toBeInTheDocument()
@@ -73,14 +73,14 @@ describe('TodoList', () => {
 
     it('should display todos as list items', () => {
       render(<TodoList todos={mockTodos} filter="all" {...mockProps} />)
-      
+
       const listItems = screen.getAllByRole('listitem')
       expect(listItems).toHaveLength(3)
     })
 
     it('should render TodoItem components for each todo', () => {
       render(<TodoList todos={mockTodos} filter="all" {...mockProps} />)
-      
+
       expect(screen.getByTestId('todo-item-1')).toBeInTheDocument()
       expect(screen.getByTestId('todo-item-2')).toBeInTheDocument()
       expect(screen.getByTestId('todo-item-3')).toBeInTheDocument()
@@ -88,7 +88,7 @@ describe('TodoList', () => {
 
     it('should render list with proper role attribute', () => {
       render(<TodoList todos={mockTodos} filter="all" {...mockProps} />)
-      
+
       expect(screen.getByRole('list')).toBeInTheDocument()
     })
   })
@@ -96,7 +96,7 @@ describe('TodoList', () => {
   describe('Filtering functionality', () => {
     it('should display only not_started todos when filter is "not_started"', () => {
       render(<TodoList todos={mockTodos} filter="not_started" {...mockProps} />)
-      
+
       expect(screen.getByText('Not started todo')).toBeInTheDocument()
       expect(screen.queryByText('In progress todo')).not.toBeInTheDocument()
       expect(screen.queryByText('Completed todo')).not.toBeInTheDocument()
@@ -104,7 +104,7 @@ describe('TodoList', () => {
 
     it('should display only in_progress todos when filter is "in_progress"', () => {
       render(<TodoList todos={mockTodos} filter="in_progress" {...mockProps} />)
-      
+
       expect(screen.queryByText('Not started todo')).not.toBeInTheDocument()
       expect(screen.getByText('In progress todo')).toBeInTheDocument()
       expect(screen.queryByText('Completed todo')).not.toBeInTheDocument()
@@ -112,29 +112,35 @@ describe('TodoList', () => {
 
     it('should display only completed todos when filter is "completed"', () => {
       render(<TodoList todos={mockTodos} filter="completed" {...mockProps} />)
-      
+
       expect(screen.queryByText('Not started todo')).not.toBeInTheDocument()
       expect(screen.queryByText('In progress todo')).not.toBeInTheDocument()
       expect(screen.getByText('Completed todo')).toBeInTheDocument()
     })
 
     it('should display empty state when no todos match the filter', () => {
-      const notStartedTodos = mockTodos.filter(todo => todo.status === 'not_started')
-      render(<TodoList todos={notStartedTodos} filter="completed" {...mockProps} />)
-      
+      const notStartedTodos = mockTodos.filter(
+        (todo) => todo.status === 'not_started'
+      )
+      render(
+        <TodoList todos={notStartedTodos} filter="completed" {...mockProps} />
+      )
+
       expect(screen.getByText('No todos found')).toBeInTheDocument()
     })
 
     it('should filter todos efficiently using useMemo', () => {
-      const { rerender } = render(<TodoList todos={mockTodos} filter="all" {...mockProps} />)
-      
+      const { rerender } = render(
+        <TodoList todos={mockTodos} filter="all" {...mockProps} />
+      )
+
       // Initial render should show all todos
       expect(screen.getAllByRole('listitem')).toHaveLength(3)
-      
+
       // Rerender with same props should not cause unnecessary filtering
       rerender(<TodoList todos={mockTodos} filter="all" {...mockProps} />)
       expect(screen.getAllByRole('listitem')).toHaveLength(3)
-      
+
       // Change filter should update display
       rerender(<TodoList todos={mockTodos} filter="completed" {...mockProps} />)
       expect(screen.getAllByRole('listitem')).toHaveLength(1)

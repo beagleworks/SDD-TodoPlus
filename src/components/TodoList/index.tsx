@@ -10,12 +10,12 @@ interface TodoListProps {
   onPostToX: (todo: Todo) => void
 }
 
-export const TodoList = ({ 
-  todos, 
-  filter, 
-  onUpdateTodo, 
-  onDeleteTodo, 
-  onPostToX 
+export const TodoList = ({
+  todos,
+  filter,
+  onUpdateTodo,
+  onDeleteTodo,
+  onPostToX,
 }: TodoListProps) => {
   // Filter todos based on the filter prop
   const filteredTodos = useMemo(() => {
