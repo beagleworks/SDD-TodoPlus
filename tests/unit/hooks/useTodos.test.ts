@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { todoReducer, useTodos } from '../../../src/hooks/useTodos'
-import { TodoState, TodoAction, Todo } from '../../../src/types'
+import type { TodoState, TodoAction, Todo } from '../../../src/types'
 
 // Mock useLocalStorage
 const mockSetValue = vi.fn()
@@ -25,7 +25,7 @@ describe('todoReducer', () => {
   })
 
   it('should throw error for unknown action type', () => {
-    const unknownAction = { type: 'UNKNOWN_ACTION' } as TodoAction
+    const unknownAction = { type: 'UNKNOWN_ACTION' } as unknown as TodoAction
 
     expect(() => {
       todoReducer(initialState, unknownAction)
@@ -79,11 +79,11 @@ describe('todoReducer', () => {
 
     const result = todoReducer(stateWithTodo, action)
 
-    expect(result.todos[0]).toMatchObject({
+    expect(result.todos[0]!).toMatchObject({
       title: 'Updated',
       status: 'in_progress',
     })
-    expect(result.todos[0].updatedAt).toBeInstanceOf(Date)
+    expect(result.todos[0]!.updatedAt).toBeInstanceOf(Date)
   })
 
   it('should handle DELETE_TODO action', () => {
@@ -121,14 +121,14 @@ describe('useTodos', () => {
     })
 
     expect(result.current.state.todos).toHaveLength(1)
-    expect(result.current.state.todos[0]).toMatchObject({
+    expect(result.current.state.todos[0]!).toMatchObject({
       title: 'Test Todo',
       status: 'not_started',
     })
-    expect(result.current.state.todos[0].id).toBeDefined()
-    expect(result.current.state.todos[0].createdAt).toBeInstanceOf(Date)
-    expect(result.current.state.todos[0].updatedAt).toBeInstanceOf(Date)
-    expect(result.current.state.todos[0].order).toBe(0)
+    expect(result.current.state.todos[0]!.id).toBeDefined()
+    expect(result.current.state.todos[0]!.createdAt).toBeInstanceOf(Date)
+    expect(result.current.state.todos[0]!.updatedAt).toBeInstanceOf(Date)
+    expect(result.current.state.todos[0]!.order).toBe(0)
   })
 
   it('should not add todo with empty title', () => {
@@ -149,7 +149,7 @@ describe('useTodos', () => {
       result.current.actions.addTodo('Test Todo')
     })
 
-    const todoId = result.current.state.todos[0].id
+    const todoId = result.current.state.todos[0]!.id
 
     // Then update it
     act(() => {
@@ -159,11 +159,11 @@ describe('useTodos', () => {
       })
     })
 
-    expect(result.current.state.todos[0]).toMatchObject({
+    expect(result.current.state.todos[0]!).toMatchObject({
       title: 'Updated Todo',
       status: 'in_progress',
     })
-    expect(result.current.state.todos[0].updatedAt).toBeInstanceOf(Date)
+    expect(result.current.state.todos[0]!.updatedAt).toBeInstanceOf(Date)
   })
 
   it('should delete todo when deleteTodo is called', () => {
@@ -174,7 +174,7 @@ describe('useTodos', () => {
       result.current.actions.addTodo('Test Todo')
     })
 
-    const todoId = result.current.state.todos[0].id
+    const todoId = result.current.state.todos[0]!.id
 
     // Then delete it
     act(() => {
@@ -193,7 +193,8 @@ describe('useTodos', () => {
       result.current.actions.addTodo('Second Todo')
     })
 
-    const [firstTodo, secondTodo] = result.current.state.todos
+    const firstTodo = result.current.state.todos[0]!
+    const secondTodo = result.current.state.todos[1]!
     const reorderedTodos = [secondTodo, firstTodo]
 
     // Reorder them
@@ -201,8 +202,8 @@ describe('useTodos', () => {
       result.current.actions.reorderTodos(reorderedTodos)
     })
 
-    expect(result.current.state.todos[0].title).toBe('Second Todo')
-    expect(result.current.state.todos[1].title).toBe('First Todo')
+    expect(result.current.state.todos[0]!.title).toBe('Second Todo')
+    expect(result.current.state.todos[1]!.title).toBe('First Todo')
   })
 
   it('should set filter when setFilter is called', () => {
@@ -222,7 +223,7 @@ describe('useTodos', () => {
       result.current.actions.addTodo('Test Todo')
     })
 
-    const originalTodo = result.current.state.todos[0]
+    const originalTodo = result.current.state.todos[0]!
 
     // Try to update non-existent todo
     act(() => {
@@ -232,7 +233,7 @@ describe('useTodos', () => {
     })
 
     // Original todo should remain unchanged
-    expect(result.current.state.todos[0]).toEqual(originalTodo)
+    expect(result.current.state.todos[0]!).toEqual(originalTodo)
   })
 
   it('should not delete non-existent todo', () => {
