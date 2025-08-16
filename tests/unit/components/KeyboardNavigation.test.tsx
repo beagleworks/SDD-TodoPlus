@@ -212,7 +212,9 @@ describe('Accessibility - Keyboard Navigation', () => {
       const allDragHandles = screen.getAllByRole('button', {
         name: /drag to reorder/i,
       })
-      const firstDragHandle = allDragHandles[0]
+      // Ensure we have drag handles before accessing them
+      expect(allDragHandles).toHaveLength(3)
+      const firstDragHandle = allDragHandles[0]!
       await user.click(firstDragHandle)
 
       // Tab through first todo item elements
@@ -224,6 +226,8 @@ describe('Accessibility - Keyboard Navigation', () => {
       await user.tab() // Post button
       await user.tab() // Next todo's drag handle
 
+      // Ensure we have at least 2 drag handles before checking
+      expect(allDragHandles).toHaveLength(3)
       expect(document.activeElement).toBe(allDragHandles[1])
     })
   })
