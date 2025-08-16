@@ -2,15 +2,16 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 import App from '../../../src/App'
+import type { Todo } from '../../../src/types'
 
 // Mock the Twitter utility
 vi.mock('../../../src/utils/twitter', () => ({
   postToTwitter: vi.fn(),
   generateTweetText: vi.fn(
-    (todo) => `タスク: ${todo.title} - ステータス: 完了`
+    (todo: Todo) => `タスク: ${todo.title} - ステータス: 完了`
   ),
-  getStatusText: vi.fn((status) => {
-    const statusMap = {
+  getStatusText: vi.fn((status: string) => {
+    const statusMap: Record<string, string> = {
       not_started: '未実行',
       in_progress: '実行中',
       completed: '完了',
@@ -70,12 +71,15 @@ describe('Twitter Integration', () => {
 
   it('should handle Twitter posting errors gracefully', async () => {
     const { postToTwitter } = await import('../../../src/utils/twitter')
-    postToTwitter.mockImplementation(() => {
+    const mockedPostToTwitter = vi.mocked(postToTwitter)
+    mockedPostToTwitter.mockImplementation(() => {
       throw new Error('X (Twitter) is not available')
     })
 
     // Mock window.alert
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
+    const alertSpy = vi
+      .spyOn(window, 'alert')
+      .mockImplementation(() => undefined)
 
     const user = userEvent.setup()
     render(<App />)

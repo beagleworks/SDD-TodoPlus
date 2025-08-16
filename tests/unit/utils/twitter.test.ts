@@ -231,9 +231,9 @@ describe('Twitter Utils', () => {
     })
 
     it('should handle undefined window (SSR environment)', () => {
-      const originalWindow = global.window
+      const originalWindow = globalThis.window
       // @ts-expect-error Testing undefined window
-      delete global.window
+      delete globalThis.window
 
       const todo: Todo = {
         id: '1',
@@ -246,7 +246,7 @@ describe('Twitter Utils', () => {
 
       expect(() => postToTwitter(todo)).toThrow('X (Twitter) is not available')
 
-      global.window = originalWindow
+      globalThis.window = originalWindow
     })
   })
 })
