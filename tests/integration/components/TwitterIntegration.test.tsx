@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 import App from '../../../src/App'
@@ -41,8 +41,14 @@ describe('Twitter Integration', () => {
   it('should integrate Twitter posting functionality end-to-end', async () => {
     const { postToTwitter } = await import('../../../src/utils/twitter')
     const user = userEvent.setup()
+    mockLocalStorage.getItem.mockReturnValue('[]')
 
     render(<App />)
+
+    // Wait for loading to complete
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText('Add new todo...')).toBeInTheDocument()
+    })
 
     // Add a new todo
     const input = screen.getByPlaceholderText('Add new todo...')
@@ -82,7 +88,14 @@ describe('Twitter Integration', () => {
       .mockImplementation(() => undefined)
 
     const user = userEvent.setup()
+    mockLocalStorage.getItem.mockReturnValue('[]')
+
     render(<App />)
+
+    // Wait for loading to complete
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText('Add new todo...')).toBeInTheDocument()
+    })
 
     // Add a new todo
     const input = screen.getByPlaceholderText('Add new todo...')

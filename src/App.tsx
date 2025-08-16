@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { TodoHeader } from './components/TodoHeader'
 import { TodoInput } from './components/TodoInput'
@@ -11,6 +11,49 @@ import './styles/index.css'
 
 function App() {
   const { state, actions } = useTodos()
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
+
+  const handlePostToX = (todo: Todo) => {
+    try {
+      postToTwitter(todo)
+    } catch (error) {
+      const networkError = createNetworkError(
+        'Failed to post to X (Twitter). Please try again.',
+        error
+      )
+      handleGlobalError(
+        error instanceof Error ? error : new Error(String(error))
+      )
+      alert(networkError.message)
+    }
+  }
+
+  // Handle initial data loading
+  useEffect(() => {
+    const loadInitialData = async () => {
+      try {
+        setIsLoading(true)
+        setLoadError(null)
+
+        // Test localStorage access to catch errors early
+        window.localStorage.getItem('todo-app-data')
+
+        // Simulate async data loading (in real app this might be from API)
+        await new Promise((resolve) => setTimeout(resolve, 50))
+
+        setIsLoading(false)
+      } catch (error) {
+        setLoadError('Error loading data. Please refresh the page.')
+        setIsLoading(false)
+        handleGlobalError(
+          error instanceof Error ? error : new Error(String(error))
+        )
+      }
+    }
+
+    loadInitialData()
+  }, [])
 
   // Set up global error handlers
   useEffect(() => {
@@ -34,26 +77,38 @@ function App() {
     }
   }, [])
 
-  const handlePostToX = (todo: Todo) => {
-    try {
-      postToTwitter(todo)
-    } catch (error) {
-      const networkError = createNetworkError(
-        'Failed to post to X (Twitter). Please try again.',
-        error
-      )
-      handleGlobalError(
-        error instanceof Error ? error : new Error(String(error))
-      )
+  // Show loading state
+  if (isLoading) {
+    return (
+      <ErrorBoundary>
+        <main className="app" role="main">
+          <TodoHeader />
+          <div>
+            <p>Loading...</p>
+          </div>
+        </main>
+      </ErrorBoundary>
+    )
+  }
 
-      // Show user-friendly error message
-      alert(networkError.message)
-    }
+  // Show error state
+  if (loadError) {
+    return (
+      <ErrorBoundary>
+        <main className="app" role="main">
+          <TodoHeader />
+          <div>
+            <p>Error loading data. Please refresh the page.</p>
+            <button onClick={() => window.location.reload()}>Refresh</button>
+          </div>
+        </main>
+      </ErrorBoundary>
+    )
   }
 
   return (
     <ErrorBoundary>
-      <div className="app">
+      <main className="app" role="main">
         <TodoHeader />
         <TodoInput onAddTodo={actions.addTodo} />
         <TodoList
@@ -63,7 +118,7 @@ function App() {
           onDeleteTodo={actions.deleteTodo}
           onPostToX={handlePostToX}
         />
-      </div>
+      </main>
     </ErrorBoundary>
   )
 }

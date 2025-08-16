@@ -44,21 +44,30 @@ describe('TodoItem', () => {
     it('should display todo status as not_started', () => {
       render(<TodoItem {...mockProps} />)
 
-      expect(screen.getByText('not_started')).toBeInTheDocument()
+      const statusSelect = screen.getByRole('combobox', {
+        name: /todo status/i,
+      })
+      expect(statusSelect).toHaveValue('not_started')
     })
 
     it('should display todo status as in_progress', () => {
       const props = createMockProps({ status: 'in_progress' })
       render(<TodoItem {...props} />)
 
-      expect(screen.getByText('in_progress')).toBeInTheDocument()
+      const statusSelect = screen.getByRole('combobox', {
+        name: /todo status/i,
+      })
+      expect(statusSelect).toHaveValue('in_progress')
     })
 
     it('should display todo status as completed', () => {
       const props = createMockProps({ status: 'completed' })
       render(<TodoItem {...props} />)
 
-      expect(screen.getByText('completed')).toBeInTheDocument()
+      const statusSelect = screen.getByRole('combobox', {
+        name: /todo status/i,
+      })
+      expect(statusSelect).toHaveValue('completed')
     })
 
     it('should display completion comment when todo is completed', () => {
@@ -181,46 +190,60 @@ describe('TodoItem', () => {
   })
 
   describe('ステータス変更機能', () => {
-    it('should call onUpdateTodo when status is clicked to change from not_started to in_progress', async () => {
+    it('should call onUpdateTodo when status is changed from not_started to in_progress', async () => {
       const user = userEvent.setup()
       const props = createMockProps({ status: 'not_started' })
       render(<TodoItem {...props} />)
 
-      await user.click(screen.getByText('not_started'))
+      const statusSelect = screen.getByRole('combobox', {
+        name: /todo status/i,
+      })
+      await user.selectOptions(statusSelect, 'in_progress')
 
       expect(props.onUpdateTodo).toHaveBeenCalledWith('1', {
         status: 'in_progress',
       })
     })
 
-    it('should call onUpdateTodo when status is clicked to change from in_progress to completed', async () => {
+    it('should call onUpdateTodo when status is changed from in_progress to completed', async () => {
       const user = userEvent.setup()
       const props = createMockProps({ status: 'in_progress' })
       render(<TodoItem {...props} />)
 
-      await user.click(screen.getByText('in_progress'))
+      const statusSelect = screen.getByRole('combobox', {
+        name: /todo status/i,
+      })
+      await user.selectOptions(statusSelect, 'completed')
 
       expect(props.onUpdateTodo).toHaveBeenCalledWith('1', {
         status: 'completed',
       })
     })
 
-    it('should call onUpdateTodo when status is clicked to change from completed to not_started', async () => {
+    it('should not allow changing status from completed to not_started (business rule)', async () => {
       const user = userEvent.setup()
       const props = createMockProps({ status: 'completed' })
       render(<TodoItem {...props} />)
 
-      await user.click(screen.getByText('completed'))
-
-      expect(props.onUpdateTodo).toHaveBeenCalledWith('1', {
-        status: 'not_started',
+      const statusSelect = screen.getByRole('combobox', {
+        name: /todo status/i,
       })
+      await user.selectOptions(statusSelect, 'not_started')
+
+      // Should not call onUpdateTodo due to business rule validation
+      expect(props.onUpdateTodo).not.toHaveBeenCalled()
+      // Status should remain completed
+      expect(statusSelect).toHaveValue('completed')
     })
 
-    it('should display status as clickable element', () => {
+    it('should display status as selectable element', () => {
       render(<TodoItem {...mockProps} />)
 
-      expect(screen.getByText('not_started')).toBeInTheDocument()
+      const statusSelect = screen.getByRole('combobox', {
+        name: /todo status/i,
+      })
+      expect(statusSelect).toBeInTheDocument()
+      expect(statusSelect).toHaveValue('not_started')
     })
   })
 

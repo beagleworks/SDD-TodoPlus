@@ -1,5 +1,7 @@
 import { useState, useCallback } from 'react'
 import type { Todo } from '../../types'
+import { TodoStatus } from '../TodoStatus'
+import { TodoActions } from '../TodoActions'
 import './TodoItem.css'
 
 interface TodoItemProps {
@@ -10,15 +12,6 @@ interface TodoItemProps {
   isDragging: boolean
   isDragOver?: boolean
   dragHandleProps: React.HTMLAttributes<HTMLButtonElement>
-}
-
-const getNextStatus = (currentStatus: Todo['status']): Todo['status'] => {
-  const statusFlow: Record<Todo['status'], Todo['status']> = {
-    not_started: 'in_progress',
-    in_progress: 'completed',
-    completed: 'not_started',
-  }
-  return statusFlow[currentStatus]
 }
 
 export const TodoItem = ({
@@ -62,10 +55,12 @@ export const TodoItem = ({
     [handleSave, handleCancel]
   )
 
-  const handleStatusClick = useCallback(() => {
-    const nextStatus = getNextStatus(todo.status)
-    onUpdateTodo(todo.id, { status: nextStatus })
-  }, [todo.status, todo.id, onUpdateTodo])
+  const handleStatusChange = useCallback(
+    (newStatus: Todo['status']) => {
+      onUpdateTodo(todo.id, { status: newStatus })
+    },
+    [todo.id, onUpdateTodo]
+  )
 
   const handleDelete = useCallback(() => {
     onDeleteTodo(todo.id)
@@ -74,6 +69,11 @@ export const TodoItem = ({
   const handlePostToX = useCallback(() => {
     onPostToX(todo)
   }, [onPostToX, todo])
+
+  const handleEdit = useCallback(() => {
+    setIsEditing(true)
+    setEditValue(todo.title)
+  }, [todo.title])
 
   const handleDragHandleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -136,12 +136,16 @@ export const TodoItem = ({
       ) : (
         <span onClick={handleTitleClick}>{todo.title}</span>
       )}
-      <span onClick={handleStatusClick}>{todo.status}</span>
+      <TodoStatus status={todo.status} onStatusChange={handleStatusChange} />
       {todo.status === 'completed' && todo.completionComment && (
         <span>{todo.completionComment}</span>
       )}
-      <button onClick={handleDelete}>Delete</button>
-      <button onClick={handlePostToX}>Post to X</button>
+      <TodoActions
+        todo={todo}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onPostToX={handlePostToX}
+      />
       <div
         role="status"
         aria-live="polite"
