@@ -1,6 +1,7 @@
 import { renderHook, act } from '@testing-library/react'
 import { vi } from 'vitest'
 import { useLocalStorage } from '../../../src/hooks/useLocalStorage'
+import type { Todo } from '../../../src/types/todo'
 
 // Mock localStorage
 const localStorageMock = (() => {
@@ -31,9 +32,13 @@ describe('useLocalStorage', () => {
 
   describe('Data reading functionality', () => {
     it('should return initial value when localStorage key does not exist', () => {
-      const initialValue = { todos: [], version: '1.0.0' }
+      interface TodoData {
+        todos: Todo[]
+        version: string
+      }
+      const initialValue: TodoData = { todos: [], version: '1.0.0' }
       const { result } = renderHook(() =>
-        useLocalStorage('non-existent-key', initialValue)
+        useLocalStorage<TodoData>('non-existent-key', initialValue)
       )
 
       expect(result.current.value).toEqual(initialValue)
@@ -51,14 +56,18 @@ describe('useLocalStorage', () => {
     })
 
     it('should handle complex object initial values', () => {
-      const initialValue = {
+      interface TodoData {
+        todos: Todo[]
+        version: string
+      }
+      const initialValue: TodoData = {
         todos: [
           {
             id: '1',
             title: 'Test Todo',
-            status: 'not_started' as const,
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            status: 'not_started',
+            createdAt: new Date('2024-01-01'),
+            updatedAt: new Date('2024-01-01'),
             order: 0,
           },
         ],
@@ -66,7 +75,7 @@ describe('useLocalStorage', () => {
       }
 
       const { result } = renderHook(() =>
-        useLocalStorage('complex-key', initialValue)
+        useLocalStorage<TodoData>('complex-key', initialValue)
       )
 
       expect(result.current.value).toEqual(initialValue)
@@ -76,14 +85,34 @@ describe('useLocalStorage', () => {
     it('should actually read from localStorage when data exists', () => {
       // Pre-populate localStorage with data
       const existingData = {
-        todos: [{ id: '1', title: 'Existing Todo' }],
+        todos: [
+          {
+            id: '1',
+            title: 'Existing Todo',
+            status: 'not_started' as const,
+            createdAt: new Date('2024-01-01').toISOString(),
+            updatedAt: new Date('2024-01-01').toISOString(),
+            order: 0,
+          },
+        ],
         version: '1.0.0',
       }
       localStorageMock.setItem('existing-key', JSON.stringify(existingData))
 
-      const initialValue = { todos: [], version: '1.0.0' }
+      interface TodoData {
+        todos: Array<{
+          id: string
+          title: string
+          status: 'not_started' | 'in_progress' | 'completed'
+          createdAt: string
+          updatedAt: string
+          order: number
+        }>
+        version: string
+      }
+      const initialValue: TodoData = { todos: [], version: '1.0.0' }
       const { result } = renderHook(() =>
-        useLocalStorage('existing-key', initialValue)
+        useLocalStorage<TodoData>('existing-key', initialValue)
       )
 
       expect(result.current.value).toEqual(existingData)
@@ -159,14 +188,34 @@ describe('useLocalStorage', () => {
     it('should remove data from localStorage and reset to initial value', () => {
       // Pre-populate localStorage
       const testData = {
-        todos: [{ id: '1', title: 'Test Todo' }],
+        todos: [
+          {
+            id: '1',
+            title: 'Test Todo',
+            status: 'not_started' as const,
+            createdAt: new Date('2024-01-01').toISOString(),
+            updatedAt: new Date('2024-01-01').toISOString(),
+            order: 0,
+          },
+        ],
         version: '1.0.0',
       }
       localStorageMock.setItem('delete-test-key', JSON.stringify(testData))
 
-      const initialValue = { todos: [], version: '1.0.0' }
+      interface TodoData {
+        todos: Array<{
+          id: string
+          title: string
+          status: 'not_started' | 'in_progress' | 'completed'
+          createdAt: string
+          updatedAt: string
+          order: number
+        }>
+        version: string
+      }
+      const initialValue: TodoData = { todos: [], version: '1.0.0' }
       const { result } = renderHook(() =>
-        useLocalStorage('delete-test-key', initialValue)
+        useLocalStorage<TodoData>('delete-test-key', initialValue)
       )
 
       // Verify data is loaded
@@ -204,15 +253,56 @@ describe('useLocalStorage', () => {
     })
 
     it('should handle complex object setValue operations', () => {
-      const initialValue = { todos: [], version: '1.0.0' }
+      interface TodoData {
+        todos: Todo[]
+        version: string
+      }
+
+      const initialValue: TodoData = { todos: [], version: '1.0.0' }
       const { result } = renderHook(() =>
-        useLocalStorage('complex-set-key', initialValue)
+        useLocalStorage<TodoData>('complex-set-key', initialValue)
       )
 
-      const newValue = {
+      const newValue: TodoData = {
         todos: [
-          { id: '1', title: 'New Todo', status: 'not_started' as const },
-          { id: '2', title: 'Another Todo', status: 'in_progress' as const },
+          {
+            id: '1',
+            title: 'New Todo',
+            status: 'not_started',
+            createdAt: new Date('2024-01-01'),
+            updatedAt: new Date('2024-01-01'),
+            order: 0,
+          },
+          {
+            id: '2',
+            title: 'Another Todo',
+            status: 'in_progress',
+            createdAt: new Date('2024-01-02'),
+            updatedAt: new Date('2024-01-02'),
+            order: 1,
+          },
+        ],
+        version: '1.1.0',
+      }
+
+      const expectedStoredValue = {
+        todos: [
+          {
+            id: '1',
+            title: 'New Todo',
+            status: 'not_started',
+            createdAt: '2024-01-01T00:00:00.000Z',
+            updatedAt: '2024-01-01T00:00:00.000Z',
+            order: 0,
+          },
+          {
+            id: '2',
+            title: 'Another Todo',
+            status: 'in_progress',
+            createdAt: '2024-01-02T00:00:00.000Z',
+            updatedAt: '2024-01-02T00:00:00.000Z',
+            order: 1,
+          },
         ],
         version: '1.1.0',
       }
@@ -224,7 +314,7 @@ describe('useLocalStorage', () => {
       expect(result.current.value).toEqual(newValue)
       expect(result.current.error).toBeNull()
       expect(JSON.parse(localStorageMock.getItem('complex-set-key')!)).toEqual(
-        newValue
+        expectedStoredValue
       )
     })
   })
@@ -234,9 +324,13 @@ describe('useLocalStorage', () => {
       // Set invalid JSON in localStorage
       localStorageMock.setItem('corrupted-key', 'invalid-json{')
 
-      const initialValue = { todos: [], version: '1.0.0' }
+      interface TodoData {
+        todos: Todo[]
+        version: string
+      }
+      const initialValue: TodoData = { todos: [], version: '1.0.0' }
       const { result } = renderHook(() =>
-        useLocalStorage('corrupted-key', initialValue)
+        useLocalStorage<TodoData>('corrupted-key', initialValue)
       )
 
       // Should fallback to initial value when JSON parsing fails
