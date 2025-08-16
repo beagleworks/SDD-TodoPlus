@@ -1,13 +1,13 @@
 # Implementation Plan (t-wada氏推奨TDDアプローチ)
 
-- [-] 1. プロジェクトセットアップと基本構造の作成
+- [x] 1. プロジェクトセットアップと基本構造の作成
   - Vite + React 19 + TypeScriptプロジェクトの初期化
   - 必要な依存関係のインストール（zod, uuid, @types/uuid, @testing-library/jest-dom等）
   - ESLint、Prettier、テスト環境の設定
   - 基本的なディレクトリ構造とファイルの作成
   - _Requirements: 7.1, 7.2, 7.3, 8.3_
 
-- [ ] 2. 型定義とデータモデルのテストファースト実装
+- [x] 2. 型定義とデータモデルのテストファースト実装
   - **Red**: Todo型のバリデーション失敗テストを書く
   - **Green**: Todo型とTodoState型の定義
   - **Red**: TodoAction型の型安全性テストを書く
@@ -17,7 +17,7 @@
   - **Refactor**: 型定義とテストコードの整理
   - _Requirements: 7.1, 6.5_
 
-- [ ] 3. ローカルストレージ管理機能のTDD実装
+- [-] 3. ローカルストレージ管理機能のTDD実装
   - **Red**: useLocalStorageフックが存在しないデータを読み込む失敗テストを書く
   - **Green**: useLocalStorageカスタムHookの基本実装
   - **Red**: データ保存失敗時のエラーハンドリングテストを書く
