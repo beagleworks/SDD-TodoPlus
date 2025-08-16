@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import type { Todo } from '../../types'
 
 interface TodoActionsProps {
@@ -7,7 +8,7 @@ interface TodoActionsProps {
   onPostToX: () => void
 }
 
-export const TodoActions = ({
+const TodoActionsComponent = ({
   todo,
   onEdit,
   onDelete,
@@ -27,3 +28,15 @@ export const TodoActions = ({
     </div>
   )
 }
+
+// Custom comparison function for React.memo
+const areEqual = (prevProps: TodoActionsProps, nextProps: TodoActionsProps) => {
+  return (
+    prevProps.todo === nextProps.todo &&
+    prevProps.onEdit === nextProps.onEdit &&
+    prevProps.onDelete === nextProps.onDelete &&
+    prevProps.onPostToX === nextProps.onPostToX
+  )
+}
+
+export const TodoActions = memo(TodoActionsComponent, areEqual)

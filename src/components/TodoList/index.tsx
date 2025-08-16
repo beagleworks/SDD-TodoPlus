@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, memo } from 'react'
 import type { Todo, TodoState } from '../../types'
 import { TodoItem } from '../TodoItem'
 
@@ -10,7 +10,7 @@ interface TodoListProps {
   onPostToX: (todo: Todo) => void
 }
 
-export const TodoList = ({
+const TodoListComponent = ({
   todos,
   filter,
   onUpdateTodo,
@@ -52,3 +52,28 @@ export const TodoList = ({
     </ul>
   )
 }
+
+// Custom comparison function for React.memo
+const areEqual = (prevProps: TodoListProps, nextProps: TodoListProps) => {
+  // Check if todos array is the same reference or has same content
+  if (prevProps.todos !== nextProps.todos) {
+    if (prevProps.todos.length !== nextProps.todos.length) {
+      return false
+    }
+    for (let i = 0; i < prevProps.todos.length; i++) {
+      if (prevProps.todos[i] !== nextProps.todos[i]) {
+        return false
+      }
+    }
+  }
+
+  // Check other props
+  return (
+    prevProps.filter === nextProps.filter &&
+    prevProps.onUpdateTodo === nextProps.onUpdateTodo &&
+    prevProps.onDeleteTodo === nextProps.onDeleteTodo &&
+    prevProps.onPostToX === nextProps.onPostToX
+  )
+}
+
+export const TodoList = memo(TodoListComponent, areEqual)

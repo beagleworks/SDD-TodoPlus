@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { TodoHeader } from './components/TodoHeader'
 import { TodoInput } from './components/TodoInput'
@@ -14,7 +14,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
 
-  const handlePostToX = (todo: Todo) => {
+  const handlePostToX = useCallback((todo: Todo) => {
     try {
       postToTwitter(todo)
     } catch (error) {
@@ -27,47 +27,50 @@ function App() {
       )
       alert(networkError.message)
     }
-  }
-
-  // Handle initial data loading
-  useEffect(() => {
-    const loadInitialData = async () => {
-      try {
-        setIsLoading(true)
-        setLoadError(null)
-
-        // Test localStorage access to catch errors early
-        window.localStorage.getItem('todo-app-data')
-
-        // Simulate async data loading (in real app this might be from API)
-        await new Promise((resolve) => setTimeout(resolve, 50))
-
-        setIsLoading(false)
-      } catch (error) {
-        setLoadError('Error loading data. Please refresh the page.')
-        setIsLoading(false)
-        handleGlobalError(
-          error instanceof Error ? error : new Error(String(error))
-        )
-      }
-    }
-
-    loadInitialData()
   }, [])
 
-  // Set up global error handlers
+  // Handle initial data loading
+  const loadInitialData = useCallback(async () => {
+    try {
+      setIsLoading(true)
+      setLoadError(null)
+
+      // Test localStorage access to catch errors early
+      window.localStorage.getItem('todo-app-data')
+
+      // Simulate async data loading (in real app this might be from API)
+      await new Promise((resolve) => setTimeout(resolve, 50))
+
+      setIsLoading(false)
+    } catch (error) {
+      setLoadError('Error loading data. Please refresh the page.')
+      setIsLoading(false)
+      handleGlobalError(
+        error instanceof Error ? error : new Error(String(error))
+      )
+    }
+  }, [])
+
   useEffect(() => {
-    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+    loadInitialData()
+  }, [loadInitialData])
+
+  // Set up global error handlers
+  const handleUnhandledRejection = useCallback(
+    (event: PromiseRejectionEvent) => {
       handleGlobalError(
         new Error(`Unhandled promise rejection: ${event.reason}`)
       )
       event.preventDefault()
-    }
+    },
+    []
+  )
 
-    const handleError = (event: ErrorEvent) => {
-      handleGlobalError(event.error || new Error(event.message))
-    }
+  const handleError = useCallback((event: ErrorEvent) => {
+    handleGlobalError(event.error || new Error(event.message))
+  }, [])
 
+  useEffect(() => {
     window.addEventListener('unhandledrejection', handleUnhandledRejection)
     window.addEventListener('error', handleError)
 
@@ -75,11 +78,11 @@ function App() {
       window.removeEventListener('unhandledrejection', handleUnhandledRejection)
       window.removeEventListener('error', handleError)
     }
-  }, [])
+  }, [handleUnhandledRejection, handleError])
 
-  // Show loading state
-  if (isLoading) {
-    return (
+  // Memoize all components before any conditional returns
+  const loadingComponent = useMemo(
+    () => (
       <ErrorBoundary>
         <main className="app" role="main">
           <TodoHeader />
@@ -88,12 +91,12 @@ function App() {
           </div>
         </main>
       </ErrorBoundary>
-    )
-  }
+    ),
+    []
+  )
 
-  // Show error state
-  if (loadError) {
-    return (
+  const errorComponent = useMemo(
+    () => (
       <ErrorBoundary>
         <main className="app" role="main">
           <TodoHeader />
@@ -103,24 +106,47 @@ function App() {
           </div>
         </main>
       </ErrorBoundary>
-    )
+    ),
+    []
+  )
+
+  const appContent = useMemo(
+    () => (
+      <ErrorBoundary>
+        <main className="app" role="main">
+          <TodoHeader />
+          <TodoInput onAddTodo={actions.addTodo} />
+          <TodoList
+            todos={state.todos}
+            filter={state.filter}
+            onUpdateTodo={actions.updateTodo}
+            onDeleteTodo={actions.deleteTodo}
+            onPostToX={handlePostToX}
+          />
+        </main>
+      </ErrorBoundary>
+    ),
+    [
+      state.todos,
+      state.filter,
+      actions.addTodo,
+      actions.updateTodo,
+      actions.deleteTodo,
+      handlePostToX,
+    ]
+  )
+
+  // Show loading state
+  if (isLoading) {
+    return loadingComponent
   }
 
-  return (
-    <ErrorBoundary>
-      <main className="app" role="main">
-        <TodoHeader />
-        <TodoInput onAddTodo={actions.addTodo} />
-        <TodoList
-          todos={state.todos}
-          filter={state.filter}
-          onUpdateTodo={actions.updateTodo}
-          onDeleteTodo={actions.deleteTodo}
-          onPostToX={handlePostToX}
-        />
-      </main>
-    </ErrorBoundary>
-  )
+  // Show error state
+  if (loadError) {
+    return errorComponent
+  }
+
+  return appContent
 }
 
 export default App

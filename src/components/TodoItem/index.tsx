@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, memo } from 'react'
 import type { Todo } from '../../types'
 import { TodoStatus } from '../TodoStatus'
 import { TodoActions } from '../TodoActions'
@@ -14,7 +14,7 @@ interface TodoItemProps {
   dragHandleProps: React.HTMLAttributes<HTMLButtonElement>
 }
 
-export const TodoItem = ({
+const TodoItemComponent = ({
   todo,
   onUpdateTodo,
   onDeleteTodo,
@@ -178,3 +178,18 @@ export const TodoItem = ({
     </div>
   )
 }
+
+// Custom comparison function for React.memo
+const areEqual = (prevProps: TodoItemProps, nextProps: TodoItemProps) => {
+  return (
+    prevProps.todo === nextProps.todo &&
+    prevProps.onUpdateTodo === nextProps.onUpdateTodo &&
+    prevProps.onDeleteTodo === nextProps.onDeleteTodo &&
+    prevProps.onPostToX === nextProps.onPostToX &&
+    prevProps.isDragging === nextProps.isDragging &&
+    prevProps.isDragOver === nextProps.isDragOver &&
+    prevProps.dragHandleProps === nextProps.dragHandleProps
+  )
+}
+
+export const TodoItem = memo(TodoItemComponent, areEqual)

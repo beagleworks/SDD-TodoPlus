@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, memo } from 'react'
 import { z } from 'zod'
 
 interface TodoInputProps {
@@ -12,7 +12,7 @@ const TodoTitleSchema = z
   .refine((val) => val.length > 0, 'Title is required')
   .refine((val) => val.length <= 200, 'Title must be 200 characters or less')
 
-export const TodoInput = ({ onAddTodo }: TodoInputProps) => {
+const TodoInputComponent = ({ onAddTodo }: TodoInputProps) => {
   const [title, setTitle] = useState('')
   const [error, setError] = useState('')
 
@@ -83,3 +83,10 @@ export const TodoInput = ({ onAddTodo }: TodoInputProps) => {
     </div>
   )
 }
+
+// Custom comparison function for React.memo
+const areEqual = (prevProps: TodoInputProps, nextProps: TodoInputProps) => {
+  return prevProps.onAddTodo === nextProps.onAddTodo
+}
+
+export const TodoInput = memo(TodoInputComponent, areEqual)

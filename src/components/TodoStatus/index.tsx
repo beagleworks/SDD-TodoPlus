@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import type { Todo } from '../../types'
 import './TodoStatus.css'
 
@@ -53,7 +54,7 @@ const formatStatusForDisplay = (status: Todo['status']): string => {
   return status.replace('_', ' ')
 }
 
-export const TodoStatus = ({ status, onStatusChange }: TodoStatusProps) => {
+const TodoStatusComponent = ({ status, onStatusChange }: TodoStatusProps) => {
   const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newValue = e.target.value
 
@@ -91,3 +92,13 @@ export const TodoStatus = ({ status, onStatusChange }: TodoStatusProps) => {
     </>
   )
 }
+
+// Custom comparison function for React.memo
+const areEqual = (prevProps: TodoStatusProps, nextProps: TodoStatusProps) => {
+  return (
+    prevProps.status === nextProps.status &&
+    prevProps.onStatusChange === nextProps.onStatusChange
+  )
+}
+
+export const TodoStatus = memo(TodoStatusComponent, areEqual)
