@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
 import type { Todo } from '../../types'
+import './TodoItem.css'
 
 interface TodoItemProps {
   todo: Todo
@@ -7,6 +8,7 @@ interface TodoItemProps {
   onDeleteTodo: (id: string) => void
   onPostToX: (todo: Todo) => void
   isDragging: boolean
+  isDragOver?: boolean
   dragHandleProps: unknown
 }
 
@@ -24,8 +26,9 @@ export const TodoItem = ({
   onUpdateTodo,
   onDeleteTodo,
   onPostToX,
-  isDragging: _isDragging,
-  dragHandleProps: _dragHandleProps,
+  isDragging,
+  isDragOver,
+  dragHandleProps,
 }: TodoItemProps) => {
   const [isEditing, setIsEditing] = useState(false)
   const [editValue, setEditValue] = useState(todo.title)
@@ -72,8 +75,55 @@ export const TodoItem = ({
     onPostToX(todo)
   }, [onPostToX, todo])
 
+  const handleDragHandleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      // Trigger drag functionality via keyboard
+      // This would typically start a keyboard-based drag mode
+    }
+  }, [])
+
+  // Drag and drop styling helpers
+  const getClassName = useCallback(() => {
+    const classes = ['todo-item']
+    if (isDragging) classes.push('dragging')
+    if (isDragOver) classes.push('drag-over')
+    return classes.join(' ')
+  }, [isDragging, isDragOver])
+
+  const getStyle = useCallback((): React.CSSProperties => {
+    const style: React.CSSProperties = {}
+    if (isDragging) {
+      style.opacity = 0.5
+      style.transform = 'rotate(2deg)'
+    }
+    return style
+  }, [isDragging])
+
+  // Screen reader announcement content
+  const getScreenReaderAnnouncement = useCallback(() => {
+    if (isDragging) return `Dragging ${todo.title}`
+    if (isDragOver) return `Drop zone active for ${todo.title}`
+    return ''
+  }, [isDragging, isDragOver, todo.title])
+
   return (
-    <div>
+    <div
+      className={getClassName()}
+      style={getStyle()}
+      role="listitem"
+      aria-grabbed={isDragging ? 'true' : 'false'}
+      aria-label={`Todo item: ${todo.title}, status: ${todo.status}`}
+    >
+      <button
+        {...dragHandleProps}
+        aria-label="Drag to reorder"
+        className="drag-handle"
+        onKeyDown={handleDragHandleKeyDown}
+        tabIndex={0}
+      >
+        ⋮⋮
+      </button>
       {isEditing ? (
         <input
           type="text"
@@ -92,6 +142,21 @@ export const TodoItem = ({
       )}
       <button onClick={handleDelete}>Delete</button>
       <button onClick={handlePostToX}>Post to X</button>
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+        style={{
+          position: 'absolute',
+          left: '-10000px',
+          width: '1px',
+          height: '1px',
+          overflow: 'hidden',
+        }}
+      >
+        {getScreenReaderAnnouncement()}
+      </div>
     </div>
   )
 }

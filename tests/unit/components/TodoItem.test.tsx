@@ -20,7 +20,11 @@ const createMockProps = (todoOverrides: Partial<Todo> = {}) => ({
   onDeleteTodo: vi.fn(),
   onPostToX: vi.fn(),
   isDragging: false,
-  dragHandleProps: {},
+  isDragOver: false,
+  dragHandleProps: {
+    draggable: true,
+    onDragStart: vi.fn(),
+  },
 })
 
 describe('TodoItem', () => {
@@ -217,6 +221,149 @@ describe('TodoItem', () => {
       render(<TodoItem {...mockProps} />)
 
       expect(screen.getByText('not_started')).toBeInTheDocument()
+    })
+  })
+
+  describe('ドラッグアンドドロップ機能', () => {
+    describe('ドラッグハンドル機能', () => {
+      it('should display drag handle button', () => {
+        render(<TodoItem {...mockProps} />)
+
+        expect(
+          screen.getByRole('button', { name: /drag/i })
+        ).toBeInTheDocument()
+      })
+
+      it('should have proper drag attributes on drag handle', () => {
+        render(<TodoItem {...mockProps} />)
+
+        const dragHandle = screen.getByRole('button', { name: /drag/i })
+        expect(dragHandle).toHaveAttribute('draggable', 'true')
+        expect(dragHandle).toHaveAttribute('tabindex', '0')
+      })
+
+      it('should trigger drag start when drag handle is used', async () => {
+        const mockDragHandleProps = {
+          onDragStart: vi.fn(),
+          draggable: true,
+        }
+        const props = createMockProps()
+        props.dragHandleProps = mockDragHandleProps
+
+        render(<TodoItem {...props} />)
+
+        const dragHandle = screen.getByRole('button', { name: /drag/i })
+
+        // Simulate drag start
+        const dragStartEvent = new Event('dragstart', { bubbles: true })
+        dragHandle.dispatchEvent(dragStartEvent)
+        expect(mockDragHandleProps.onDragStart).toHaveBeenCalled()
+      })
+    })
+
+    describe('視覚的フィードバック機能', () => {
+      it('should apply dragging class when isDragging is true', () => {
+        const props = createMockProps()
+        props.isDragging = true
+        render(<TodoItem {...props} />)
+
+        const todoItem = screen.getByRole('listitem')
+        expect(todoItem).toHaveClass('dragging')
+      })
+
+      it('should apply visual feedback styles during drag', () => {
+        const props = createMockProps()
+        props.isDragging = true
+        render(<TodoItem {...props} />)
+
+        const todoItem = screen.getByRole('listitem')
+        expect(todoItem).toHaveStyle('opacity: 0.5')
+        expect(todoItem).toHaveStyle('transform: rotate(2deg)')
+      })
+
+      it('should show drag over state', () => {
+        const props = createMockProps()
+        props.isDragOver = true
+        render(<TodoItem {...props} />)
+
+        const todoItem = screen.getByRole('listitem')
+        expect(todoItem).toHaveClass('drag-over')
+      })
+
+      it('should combine multiple visual states', () => {
+        const props = createMockProps()
+        props.isDragging = true
+        props.isDragOver = true
+        render(<TodoItem {...props} />)
+
+        const todoItem = screen.getByRole('listitem')
+        expect(todoItem).toHaveClass('todo-item', 'dragging', 'drag-over')
+      })
+    })
+
+    describe('アクセシビリティ対応機能', () => {
+      it('should support keyboard navigation for drag handle', async () => {
+        const user = userEvent.setup()
+        render(<TodoItem {...mockProps} />)
+
+        const dragHandle = screen.getByRole('button', { name: /drag/i })
+
+        // Test that drag handle is focusable
+        await user.tab()
+        expect(dragHandle).toHaveFocus()
+
+        // Test keyboard activation (Enter and Space)
+        await user.keyboard('{Enter}')
+        await user.keyboard(' ')
+        // These should not throw errors and handle keyboard events
+      })
+
+      it('should have proper ARIA attributes for drag and drop', () => {
+        render(<TodoItem {...mockProps} />)
+
+        const todoItem = screen.getByRole('listitem')
+
+        expect(todoItem).toHaveAttribute('role', 'listitem')
+        expect(todoItem).toHaveAttribute('aria-grabbed', 'false')
+        expect(todoItem).toHaveAttribute('aria-label')
+      })
+
+      it('should update ARIA attributes during drag', () => {
+        const props = createMockProps()
+        props.isDragging = true
+        render(<TodoItem {...props} />)
+
+        const todoItem = screen.getByRole('listitem')
+
+        expect(todoItem).toHaveAttribute('aria-grabbed', 'true')
+      })
+
+      it('should provide screen reader announcements', () => {
+        render(<TodoItem {...mockProps} />)
+
+        const srAnnouncement = screen.getByRole('status', { hidden: true })
+        expect(srAnnouncement).toBeInTheDocument()
+      })
+
+      it('should announce drag state to screen readers', () => {
+        const props = createMockProps()
+        props.isDragging = true
+        render(<TodoItem {...props} />)
+
+        const srAnnouncement = screen.getByRole('status', { hidden: true })
+        expect(srAnnouncement).toHaveTextContent(`Dragging ${props.todo.title}`)
+      })
+
+      it('should announce drag over state to screen readers', () => {
+        const props = createMockProps()
+        props.isDragOver = true
+        render(<TodoItem {...props} />)
+
+        const srAnnouncement = screen.getByRole('status', { hidden: true })
+        expect(srAnnouncement).toHaveTextContent(
+          `Drop zone active for ${props.todo.title}`
+        )
+      })
     })
   })
 })

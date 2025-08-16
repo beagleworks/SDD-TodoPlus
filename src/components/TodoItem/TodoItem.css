@@ -1,0 +1,69 @@
+.todo-item {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  margin: 4px 0;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  background-color: #ffffff;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.todo-item.dragging {
+  opacity: 0.5;
+  transform: rotate(2deg);
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.todo-item.drag-over {
+  border: 2px dashed #007bff;
+  background-color: #f8f9fa;
+  transform: scale(1.02);
+}
+
+.drag-handle {
+  cursor: grab;
+  padding: 4px 8px;
+  margin-right: 8px;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  color: #6c757d;
+  border-radius: 2px;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.drag-handle:hover {
+  color: #495057;
+  background-color: #f8f9fa;
+}
+
+.drag-handle:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+.drag-handle:active,
+.todo-item.dragging .drag-handle {
+  cursor: grabbing;
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
