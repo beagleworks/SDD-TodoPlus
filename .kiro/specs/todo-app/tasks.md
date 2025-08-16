@@ -1,6 +1,6 @@
 # Implementation Plan (t-wada氏推奨TDDアプローチ)
 
-- [ ] 1. プロジェクトセットアップと基本構造の作成
+- [-] 1. プロジェクトセットアップと基本構造の作成
   - Vite + React 19 + TypeScriptプロジェクトの初期化
   - 必要な依存関係のインストール（zod, uuid, @types/uuid, @testing-library/jest-dom等）
   - ESLint、Prettier、テスト環境の設定
