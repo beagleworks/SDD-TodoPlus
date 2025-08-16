@@ -118,7 +118,7 @@
   - **Refactor**: X投稿機能とテストコードの整理
   - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
 
-- [ ] 9. エラーハンドリングとErrorBoundaryのTDD実装
+- [x] 9. エラーハンドリングとErrorBoundaryのTDD実装
   - **Red**: AppError型が存在しない失敗テストを書く
   - **Green**: AppError型の定義
   - **Red**: ErrorBoundaryがエラーをキャッチしない失敗テストを書く

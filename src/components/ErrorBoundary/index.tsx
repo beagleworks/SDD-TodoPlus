@@ -1,5 +1,7 @@
-import { Component, type ReactNode } from 'react'
+import React, { Component, type ReactNode } from 'react'
 import type { AppError } from '../../types'
+import { createAppError, handleGlobalError } from '../../utils/errorHandler'
+import { ErrorDisplay } from '../ErrorDisplay'
 
 interface ErrorBoundaryProps {
   children: ReactNode
@@ -20,23 +22,29 @@ export class ErrorBoundary extends Component<
   }
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    const appError = createAppError(error)
     return {
       hasError: true,
-      error: {
-        type: 'UNKNOWN_ERROR',
-        message: error.message,
-        details: error,
-      },
+      error: appError,
     }
   }
 
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    // Log the error globally
+    handleGlobalError(error)
+
+    // In a real app, you might want to send error info to a logging service
+    console.error('ErrorBoundary caught an error:', error, errorInfo)
+  }
+
+  private handleRetry = () => {
+    this.setState({ hasError: false, error: null })
+  }
+
   render() {
-    if (this.state.hasError) {
+    if (this.state.hasError && this.state.error) {
       return (
-        <div>
-          <h2>Something went wrong.</h2>
-          <p>{this.state.error?.message}</p>
-        </div>
+        <ErrorDisplay error={this.state.error} onRetry={this.handleRetry} />
       )
     }
 
