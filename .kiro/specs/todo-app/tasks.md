@@ -17,7 +17,7 @@
   - **Refactor**: 型定義とテストコードの整理
   - _Requirements: 7.1, 6.5_
 
-- [-] 3. ローカルストレージ管理機能のTDD実装
+- [x] 3. ローカルストレージ管理機能のTDD実装
   - **Red**: useLocalStorageフックが存在しないデータを読み込む失敗テストを書く
   - **Green**: useLocalStorageカスタムHookの基本実装
   - **Red**: データ保存失敗時のエラーハンドリングテストを書く
@@ -27,7 +27,7 @@
   - **Refactor**: useLocalStorageフックとテストコードの整理
   - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5_
 
-- [ ] 4. Todo状態管理のTDD実装
+- [x] 4. Todo状態管理のTDD実装
   - **Red**: TodoReducerが存在しないアクションを処理する失敗テストを書く
   - **Green**: TodoReducerの基本実装
   - **Red**: useTodosフックのTodo作成機能テストを書く
@@ -38,7 +38,7 @@
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 2.1, 2.2, 2.5_
 
 - [ ] 5. 基本UIコンポーネントのTDD実装
-- [ ] 5.1 TodoInputコンポーネントのTDD実装
+- [x] 5.1 TodoInputコンポーネントのTDD実装
   - **Red**: 空の入力でTodo追加を試行する失敗テストを書く
   - **Green**: 新しいTodoを追加するフォームの基本実装
   - **Red**: バリデーション機能のテストを書く（文字数制限等）
@@ -46,7 +46,7 @@
   - **Refactor**: TodoInputコンポーネントとテストコードの整理
   - _Requirements: 1.1, 1.2_
 
-- [ ] 5.2 TodoItemコンポーネントのTDD実装
+- [x] 5.2 TodoItemコンポーネントのTDD実装
   - **Red**: Todo表示機能のテストを書く（タイトル、ステータス表示）
   - **Green**: Todo表示機能の実装
   - **Red**: Todo編集機能のテストを書く

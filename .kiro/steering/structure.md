@@ -1,6 +1,7 @@
 # Project Structure
 
 ## Root Directory Organization
+
 ```
 /
 ├── src/                    # Source code
@@ -11,6 +12,7 @@
 ```
 
 ## Source Code Structure
+
 ```
 src/
 ├── components/             # React components
@@ -38,12 +40,14 @@ src/
 ```
 
 ## Component Architecture
+
 - **Hierarchical structure**: App → TodoHeader/TodoInput/TodoList → TodoItem → TodoStatus/TodoActions
 - **Single responsibility**: Each component handles one specific concern
 - **Composition over inheritance**: Components compose together rather than extend
 - **Props interface**: Each component has a well-defined TypeScript interface
 
 ## Test Structure
+
 ```
 tests/
 ├── unit/                   # Unit tests (70% of test suite)
@@ -57,6 +61,7 @@ tests/
 ```
 
 ## File Naming Conventions
+
 - **Components**: PascalCase directories with index.tsx (e.g., `TodoItem/index.tsx`)
 - **Hooks**: camelCase with "use" prefix (e.g., `useTodos.ts`)
 - **Types**: camelCase with descriptive names (e.g., `todo.ts`, `errors.ts`)
@@ -64,12 +69,14 @@ tests/
 - **Tests**: Match source file name with `.test.ts` suffix
 
 ## Import/Export Patterns
+
 - **Named exports**: Prefer named exports over default exports
 - **Barrel exports**: Use index.ts files for clean imports
 - **Absolute imports**: Configure path mapping for cleaner imports
 - **Type-only imports**: Use `import type` for TypeScript types
 
 ## State Management Organization
+
 - **Global state**: Context API with useReducer for todos
 - **Local state**: useState for component-specific state
 - **Custom hooks**: Encapsulate complex state logic
