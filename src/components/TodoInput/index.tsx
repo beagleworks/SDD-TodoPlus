@@ -25,7 +25,7 @@ export const TodoInput = ({ onAddTodo }: TodoInputProps) => {
       setTitle('')
     } catch (validationError) {
       if (validationError instanceof z.ZodError) {
-        setError(validationError.issues[0].message)
+        setError(validationError.issues[0]?.message || 'Validation error')
       }
     }
   }, [title, onAddTodo])
@@ -57,7 +57,7 @@ export const TodoInput = ({ onAddTodo }: TodoInputProps) => {
         placeholder="Add new todo..."
         value={title}
         onChange={handleInputChange}
-        onKeyPress={handleKeyPress}
+        onKeyDown={handleKeyPress}
         aria-label="Todo title"
         aria-describedby={error ? 'todo-input-error' : undefined}
         aria-invalid={!!error}
