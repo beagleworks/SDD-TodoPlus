@@ -59,12 +59,22 @@ export const TodoInput = ({ onAddTodo }: TodoInputProps) => {
         onChange={handleInputChange}
         onKeyDown={handleKeyPress}
         aria-label="Todo title"
-        aria-describedby={error ? 'todo-input-error' : undefined}
+        aria-describedby={error ? 'todo-input-error' : 'add-todo-instructions'}
         aria-invalid={!!error}
+        aria-required="true"
       />
-      <button onClick={validateAndSubmit} type="button" aria-label="Add todo">
+      <button
+        onClick={validateAndSubmit}
+        type="button"
+        aria-label="Add todo"
+        aria-describedby="add-todo-instructions"
+      >
         Add Todo
       </button>
+      <div id="add-todo-instructions" className="sr-only">
+        Enter a todo title and press Enter or click Add Todo to create a new
+        task
+      </div>
       {error && (
         <div id="todo-input-error" role="alert" aria-live="polite">
           {error}

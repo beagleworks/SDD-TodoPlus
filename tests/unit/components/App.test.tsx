@@ -168,7 +168,7 @@ describe('App', () => {
         screen.getByRole('button', { name: /delete/i })
       ).toBeInTheDocument()
       expect(
-        screen.getByRole('button', { name: /post to x/i })
+        screen.getByRole('button', { name: /post.*to x/i })
       ).toBeInTheDocument()
     })
 
@@ -231,7 +231,7 @@ describe('App', () => {
         screen.getByRole('button', { name: /delete/i })
       ).toBeInTheDocument()
       expect(
-        screen.getByRole('button', { name: /post to x/i })
+        screen.getByRole('button', { name: /post.*to x/i })
       ).toBeInTheDocument()
     })
 

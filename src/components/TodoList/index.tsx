@@ -28,13 +28,15 @@ export const TodoList = ({
   if (filteredTodos.length === 0) {
     return (
       <div>
-        <p>No todos found</p>
+        <p role="status" aria-live="polite">
+          No todos found
+        </p>
       </div>
     )
   }
 
   return (
-    <ul role="list">
+    <ul role="list" aria-label="Todo list">
       {filteredTodos.map((todo) => (
         <li key={todo.id}>
           <TodoItem

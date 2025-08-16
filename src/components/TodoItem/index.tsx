@@ -75,13 +75,20 @@ export const TodoItem = ({
     setEditValue(todo.title)
   }, [todo.title])
 
-  const handleDragHandleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault()
-      // Trigger drag functionality via keyboard
-      // This would typically start a keyboard-based drag mode
-    }
-  }, [])
+  const handleDragHandleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        // Trigger drag functionality via keyboard
+        // This would typically start a keyboard-based drag mode
+      }
+      // Also call the provided onKeyDown handler if it exists
+      if (dragHandleProps.onKeyDown) {
+        dragHandleProps.onKeyDown(e as React.KeyboardEvent<HTMLButtonElement>)
+      }
+    },
+    [dragHandleProps]
+  )
 
   // Drag and drop styling helpers
   const getClassName = useCallback(() => {
@@ -125,14 +132,21 @@ export const TodoItem = ({
         ⋮⋮
       </button>
       {isEditing ? (
-        <input
-          type="text"
-          value={editValue}
-          onChange={(e) => setEditValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onBlur={handleSave}
-          autoFocus
-        />
+        <>
+          <input
+            type="text"
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onBlur={handleSave}
+            autoFocus
+            aria-label="Edit todo title"
+            aria-describedby="edit-instructions"
+          />
+          <div id="edit-instructions" className="sr-only">
+            Press Enter to save, Escape to cancel
+          </div>
+        </>
       ) : (
         <span onClick={handleTitleClick}>{todo.title}</span>
       )}

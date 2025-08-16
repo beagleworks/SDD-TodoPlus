@@ -22,9 +22,7 @@ describe('CompletionCommentModal', () => {
       )
 
       // Modal should not be visible
-      expect(
-        screen.queryByText('Add Completion Comment')
-      ).not.toBeInTheDocument()
+      expect(screen.queryByText('Completion Comment')).not.toBeInTheDocument()
       expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
       expect(screen.queryByText('Save')).not.toBeInTheDocument()
       expect(screen.queryByText('Cancel')).not.toBeInTheDocument()
@@ -40,7 +38,7 @@ describe('CompletionCommentModal', () => {
       )
 
       // Modal should be visible with all elements
-      expect(screen.getByText('Add Completion Comment')).toBeInTheDocument()
+      expect(screen.getByText('Completion Comment')).toBeInTheDocument()
       expect(screen.getByRole('textbox')).toBeInTheDocument()
       expect(screen.getByText('Save')).toBeInTheDocument()
       expect(screen.getByText('Cancel')).toBeInTheDocument()
@@ -390,7 +388,7 @@ describe('CompletionCommentModal', () => {
         />
       )
 
-      expect(screen.getByText('Add Completion Comment')).toBeInTheDocument()
+      expect(screen.getByText('Completion Comment')).toBeInTheDocument()
       expect(
         screen.getByPlaceholderText('Enter completion comment (optional)')
       ).toBeInTheDocument()

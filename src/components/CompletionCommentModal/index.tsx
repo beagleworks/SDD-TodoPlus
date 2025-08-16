@@ -60,13 +60,21 @@ export const CompletionCommentModal = ({
     <div
       className="completion-comment-modal-overlay"
       role="dialog"
-      aria-labelledby="modal-title"
+      aria-labelledby="completion-comment-title"
+      aria-describedby="completion-comment-description"
       aria-modal="true"
     >
       <div className="completion-comment-modal-content">
-        <h3 id="modal-title" className="completion-comment-modal-title">
-          Add Completion Comment
+        <h3
+          id="completion-comment-title"
+          className="completion-comment-modal-title"
+        >
+          Completion Comment
         </h3>
+        <p id="completion-comment-description" className="sr-only">
+          Add a comment about completing this task. This is optional and can
+          help you remember what you accomplished.
+        </p>
         <textarea
           ref={textareaRef}
           value={comment}
@@ -75,7 +83,11 @@ export const CompletionCommentModal = ({
           rows={4}
           className="completion-comment-modal-textarea"
           aria-label="Completion comment"
+          aria-describedby="completion-comment-description"
         />
+        <div className="sr-only">
+          Press Escape to close this dialog, or Ctrl+Enter to save quickly.
+        </div>
         <div className="completion-comment-modal-actions">
           <button
             onClick={handleSave}

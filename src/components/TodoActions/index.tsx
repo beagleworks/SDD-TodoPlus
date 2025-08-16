@@ -8,16 +8,22 @@ interface TodoActionsProps {
 }
 
 export const TodoActions = ({
-  todo: _todo,
+  todo,
   onEdit,
   onDelete,
   onPostToX,
 }: TodoActionsProps) => {
   return (
     <div>
-      <button onClick={onEdit}>Edit</button>
-      <button onClick={onDelete}>Delete</button>
-      <button onClick={onPostToX}>Post to X</button>
+      <button onClick={onEdit} aria-label={`Edit ${todo.title}`}>
+        Edit
+      </button>
+      <button onClick={onDelete} aria-label={`Delete ${todo.title}`}>
+        Delete
+      </button>
+      <button onClick={onPostToX} aria-label={`Post ${todo.title} to X`}>
+        Post to X
+      </button>
     </div>
   )
 }
