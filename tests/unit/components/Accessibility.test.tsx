@@ -6,6 +6,7 @@ import { TodoList } from '../../../src/components/TodoList'
 import { TodoInput } from '../../../src/components/TodoInput'
 import { TodoActions } from '../../../src/components/TodoActions'
 import type { Todo } from '../../../src/types'
+import React from 'react'
 
 const mockTodo: Todo = {
   id: '1',
