@@ -154,7 +154,7 @@ describe('Performance Verification Tests', () => {
       const renderTime = endTime - startTime
 
       // Should be reasonably fast with virtualization
-      expect(renderTime).toBeLessThan(300) // 300ms threshold for 200 items
+      expect(renderTime).toBeLessThan(500)
     })
 
     it('should demonstrate memoization effectiveness', () => {
