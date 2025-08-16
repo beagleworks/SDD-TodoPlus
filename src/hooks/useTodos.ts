@@ -1,6 +1,6 @@
 import { useReducer, useCallback, useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { TodoState, TodoAction, Todo } from '../types'
+import type { TodoState, TodoAction, Todo } from '../types'
 import { useLocalStorage } from './useLocalStorage'
 
 export function todoReducer(state: TodoState, action: TodoAction): TodoState {
